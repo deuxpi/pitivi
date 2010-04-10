@@ -25,6 +25,7 @@ Custom canvas item for track object keyframe curves."""
 import goocanvas
 import gobject
 import gtk
+import math
 
 from pitivi.receiver import receiver, handler
 from pitivi.ui.zoominterface import Zoomable
@@ -118,9 +119,10 @@ class Curve(goocanvas.ItemSimple, goocanvas.Item, View, Zoomable):
             bounds = view.bounds
             time = (Zoomable.pixelToNs(pos[0] - bounds.x1) +
                 view.element.in_point)
-            value = ((1 - (pos[1] - KW_LABEL_Y_OVERFLOW - bounds.y1 - 
-                view._min) / view._range) * 
-                    interpolator.range) + interpolator.lower
+            value = (1 - (pos[1] - KW_LABEL_Y_OVERFLOW - bounds.y1 -
+                view._min) / view._range)
+            value = ((interpolator.range / (math.exp(1) - 1)) *
+                (math.exp(value) - 1) + interpolator.lower)
             return time, value
 
         def enter(self, item ,target):
